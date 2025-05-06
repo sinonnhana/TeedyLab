@@ -1,9 +1,5 @@
 pipeline {
     agent any
-    environment {
-        JAVA_HOME = '/Library/Java/JavaVirtualMachines/openjdk-11.jdk/Contents/Home'
-        PATH = "${env.JAVA_HOME}/bin:/usr/local/bin:/usr/bin:/bin:${env.PATH}"
-    }
 
     stages {
         stage('Build & Install') {
