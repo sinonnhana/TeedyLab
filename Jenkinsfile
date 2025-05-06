@@ -1,8 +1,8 @@
 pipeline {
     agent any
     environment {
-      JAVA_HOME = '/usr/lib/jvm/java-11-openjdk-amd64'
-      PATH      = "${env.JAVA_HOME}/bin:/usr/share/maven/bin:${env.PATH}"
+        JAVA_HOME = '/Library/Java/JavaVirtualMachines/openjdk-11.jdk/Contents/Home'
+        PATH = "${env.JAVA_HOME}/bin:/usr/local/bin:/usr/bin:/bin:${env.PATH}"
     }
 
     stages {
