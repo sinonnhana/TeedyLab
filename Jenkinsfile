@@ -1,44 +1,40 @@
 pipeline {
     agent any
 
+    environment {
+        DEPLOYMENT_NAME = "hello-node"
+        CONTAINER_NAME = "teedy"
+        IMAGE_NAME = "your-dockerhub-id/your-image:version"
+    }
+
     stages {
-        stage('Build & Install') {
+        stage('Start Minikube') {
             steps {
-                sh 'mvn clean install -DskipTests'
+                sh '''
+                    if ! minikube status | grep -q "Running"; then
+                        echo "Starting Minikube..."
+                        minikube start
+                    else
+                        echo "Minikube already running."
+                    fi
+                '''
             }
         }
-        stage('Test') {
+
+        stage('Set Image') {
             steps {
-                sh 'mvn test -Dmaven.test.failure.ignore=true'
+                sh '''
+                    echo "Setting image for deployment..."
+                    kubectl set image deployment/${DEPLOYMENT_NAME} ${CONTAINER_NAME}=${IMAGE_NAME}
+                '''
             }
         }
-        stage('PMD') {
+
+        stage('Verify') {
             steps {
-                sh 'mvn pmd:cpd pmd:pmd'
-            }
-        }
-        stage('JaCoCo') {
-            steps {
-                sh 'mvn jacoco:report'
-            }
-        }
-        // stage('Javadoc') {
-        //     steps {
-        //         // sh 'mvn javadoc:javadoc'
-        //     }
-        // }
-        stage('Site') {
-            steps {
-                sh 'mvn site site:stage -DskipTests'
+                sh 'kubectl rollout status deployment/${DEPLOYMENT_NAME}'
+                sh 'kubectl get pods'
             }
         }
     }
-     post {
-        always {
-            archiveArtifacts artifacts: '**/target/staging/**/*.*', fingerprint: true
-            archiveArtifacts artifacts: '**/target/**/*.jar', fingerprint: true
-            archiveArtifacts artifacts: '**/target/**/*.war', fingerprint: true
-            junit '**/target/surefire-reports/*.xml'
-        }
-     }
 }
