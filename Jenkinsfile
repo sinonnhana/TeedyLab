@@ -4,7 +4,7 @@ pipeline {
     environment {
         DEPLOYMENT_NAME = "hello-node"
         CONTAINER_NAME = "teedy"
-        IMAGE_NAME = "sinonnhana/teedy:latest"
+        IMAGE_NAME = "sinonnhana/teedy:20"
     }
 
     stages {
